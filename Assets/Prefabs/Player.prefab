@@ -260,6 +260,7 @@ GameObject:
   - component: {fileID: 3672733767016377339}
   - component: {fileID: 8277862459769901068}
   - component: {fileID: 6289019414265446976}
+  - component: {fileID: 3262418505791669783}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -296,7 +297,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 3738959488
+  GlobalObjectIdHash: 2981800307
   InScenePlacedSourceGlobalObjectIdHash: 0
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 1
@@ -380,6 +381,20 @@ MonoBehaviour:
   rb: {fileID: 8277862459769901068}
   movementSpeed: 4.5
   turningRate: 270
+--- !u!114 &3262418505791669783
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 898124515834736378}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 50da4947e90187c49b8fc5b534499c42, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  inputReader: {fileID: 11400000, guid: 78352c20c996a894f90d070f47ab3d7c, type: 2}
+  turretTransfrom: {fileID: 3151325390504356399}
 --- !u!1 &5827130991552865492
 GameObject:
   m_ObjectHideFlags: 0
