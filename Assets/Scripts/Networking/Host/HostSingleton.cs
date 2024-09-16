@@ -7,7 +7,7 @@ public class HostSingleton : MonoBehaviour
 {
 
     private static HostSingleton instance;
-    private HostGameManager hostGameManager;
+    public HostGameManager HostGameManager;
     public static HostSingleton Instance
     {
         get
@@ -32,7 +32,7 @@ public class HostSingleton : MonoBehaviour
     
     public void CreateHost()
     {
-        hostGameManager = new HostGameManager();
+        HostGameManager = new HostGameManager();
         // await hostGameManager.InitAsync();
 
     }
