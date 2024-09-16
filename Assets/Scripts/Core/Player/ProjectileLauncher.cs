@@ -50,7 +50,7 @@ public class ProjectileLauncher : NetworkBehaviour
         if (!IsOwner) return;
         if (!isFire) { return; }
         if(Time.time<(1/fireRate+previousFireTime)){return;}
-        
+
         PrimaryFireServerRpc(projectileSpawnPoint.position, projectileSpawnPoint.up);
         SpawnDummyProjectile(projectileSpawnPoint.position, projectileSpawnPoint.up);
 
@@ -64,7 +64,10 @@ public class ProjectileLauncher : NetworkBehaviour
         GameObject projectileInstance = Instantiate(serverProjectilePrefab, spawnPos, Quaternion.identity);
         projectileInstance.transform.up = dir;
         Physics2D.IgnoreCollision(playerCollider, projectileInstance.GetComponent<Collider2D>());
+        if(projectileInstance.TryGetComponent<DealDamageOnContact>(out DealDamageOnContact dealDamage)){
 
+            dealDamage.SetOwner(this.OwnerClientId);
+        }
         if (projectileInstance.TryGetComponent<Rigidbody2D>(out Rigidbody2D rb))
         {
             rb.velocity = rb.transform.up * projectileSpeed;
