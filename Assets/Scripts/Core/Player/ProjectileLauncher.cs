@@ -8,6 +8,7 @@ public class ProjectileLauncher : NetworkBehaviour
 {
     [Header("References")]
     [SerializeField] private InputReader inputReader;
+    [SerializeField] private CoinWallet coinWallet;
     [SerializeField] private Transform projectileSpawnPoint;
     [SerializeField] private GameObject serverProjectilePrefab;
     [SerializeField] private GameObject clientProjectilePrefab;
@@ -17,9 +18,10 @@ public class ProjectileLauncher : NetworkBehaviour
     [SerializeField] private float projectileSpeed = 30;
     [SerializeField] private float fireRate = 0.75f;
     [SerializeField] private float muzzleFlashDuration = 0.075f;
+    [SerializeField] private int costToFire = 0;
     private bool isFire;
-    private float previousFireTime;
     private float muzzleFlashTimer;
+    private float timer;
 
     public override void OnNetworkSpawn()
     {
@@ -48,23 +50,31 @@ public class ProjectileLauncher : NetworkBehaviour
             }
         }
         if (!IsOwner) return;
+        if (timer > 0)
+        {
+            timer -= Time.deltaTime;
+        }
         if (!isFire) { return; }
-        if(Time.time<(1/fireRate+previousFireTime)){return;}
-
+        if (timer > 0) { return; }
+        if(coinWallet.TotalCoins.Value<costToFire)return;
         PrimaryFireServerRpc(projectileSpawnPoint.position, projectileSpawnPoint.up);
         SpawnDummyProjectile(projectileSpawnPoint.position, projectileSpawnPoint.up);
 
-        previousFireTime=Time.time;
+        timer = 1 / fireRate;
 
     }
 
     [ServerRpc]
     private void PrimaryFireServerRpc(Vector2 spawnPos, Vector2 dir)
     {
+        if(coinWallet.TotalCoins.Value<costToFire)return;
+        coinWallet.SpendCoins(costToFire);
+        
         GameObject projectileInstance = Instantiate(serverProjectilePrefab, spawnPos, Quaternion.identity);
         projectileInstance.transform.up = dir;
         Physics2D.IgnoreCollision(playerCollider, projectileInstance.GetComponent<Collider2D>());
-        if(projectileInstance.TryGetComponent<DealDamageOnContact>(out DealDamageOnContact dealDamage)){
+        if (projectileInstance.TryGetComponent<DealDamageOnContact>(out DealDamageOnContact dealDamage))
+        {
 
             dealDamage.SetOwner(this.OwnerClientId);
         }
