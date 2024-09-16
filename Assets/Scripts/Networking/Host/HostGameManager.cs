@@ -12,7 +12,7 @@ using UnityEngine;
 public class HostGameManager
 {
     private const string _gameSceneName = "Game";
-    private const string _connectionType = "udp";
+    private const string _connectionType = "dtls";
     private Allocation allocation;
     private string joinCode = "";
     private const int MaxConnections = 20;
@@ -39,7 +39,7 @@ public class HostGameManager
             return;
         }
 
-       UnityTransport transport = NetworkManager.Singleton.GetComponent<UnityTransport>();
+        UnityTransport transport = NetworkManager.Singleton.GetComponent<UnityTransport>();
         RelayServerData relayServerData = new RelayServerData(allocation,_connectionType);
         transport.SetRelayServerData(relayServerData);
 
