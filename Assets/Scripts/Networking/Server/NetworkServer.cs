@@ -17,8 +17,6 @@ public class NetworkServer : IDisposable
         networkManager.OnServerStarted += OnNetworkReady;
     }
 
-
-
     private void ApprovalCheck(NetworkManager.ConnectionApprovalRequest req, NetworkManager.ConnectionApprovalResponse res)
     {
         string payload = System.Text.Encoding.UTF8.GetString(req.Payload);
@@ -46,7 +44,18 @@ public class NetworkServer : IDisposable
             authIdToUserData.Remove(autId);
         }
     }
-
+    public UserData GetUserDataByClientId(ulong clientId)
+    {
+        if (clientIdToAuth.TryGetValue(clientId, out string authId))
+        {
+            if (authIdToUserData.TryGetValue(authId, out UserData data))
+            {
+                return data;
+            }
+            return null;
+        }
+        return null;
+    }
     public void Dispose()
     {
         if (networkManager == null) { return; }
