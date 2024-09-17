@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
 
-public class NetworkServer
+public class NetworkServer : IDisposable
 {
     private NetworkManager networkManager;
     private Dictionary<ulong, string> clientIdToAuth = new Dictionary<ulong, string>();
@@ -40,9 +40,22 @@ public class NetworkServer
 
     private void OnClientDisconnect(ulong id)
     {
-        if(clientIdToAuth.TryGetValue(id,out string autId)){
+        if (clientIdToAuth.TryGetValue(id, out string autId))
+        {
             clientIdToAuth.Remove(id);
             authIdToUserData.Remove(autId);
+        }
+    }
+
+    public void Dispose()
+    {
+        if (networkManager == null) { return; }
+        networkManager.ConnectionApprovalCallback -= ApprovalCheck;
+        networkManager.OnServerStarted -= OnNetworkReady;
+        networkManager.OnClientConnectedCallback -= OnClientDisconnect;
+        if (networkManager.IsListening)
+        {
+            networkManager.Shutdown();
         }
     }
 }
