@@ -14,16 +14,19 @@ public class ClientNetworkTransfrom : NetworkTransform
     {
         CanCommitToTransform = IsOwner;//make sure CanCommitToTransform is still IsOwner
         base.Update();
-        if(NetworkManager != null){
-            if(NetworkManager.IsConnectedClient|| NetworkManager.IsListening){
-                if(CanCommitToTransform){
-                    TryCommitTransformToServer(transform,NetworkManager.LocalTime.Time);
+        if (NetworkManager != null)
+        {
+            if (NetworkManager.IsConnectedClient || NetworkManager.IsListening)
+            {
+                if (CanCommitToTransform)
+                {
+                    TryCommitTransformToServer(transform, NetworkManager.LocalTime.Time);
                 }
             }
         }
     }
     protected override bool OnIsServerAuthoritative()
     {
-        return base.OnIsServerAuthoritative();
+        return false;
     }
 }
