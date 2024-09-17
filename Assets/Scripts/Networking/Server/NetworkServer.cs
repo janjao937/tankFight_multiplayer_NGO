@@ -26,6 +26,8 @@ public class NetworkServer : IDisposable
         authIdToUserData[userData.UserAuthId] = userData;
 
         res.Approved = true;
+        res.Position = SpawnPoint.GetRandomSpawnPos();
+        res.Rotation = Quaternion.identity;
         res.CreatePlayerObject = true;
 
         // Debug.Log(userData.UserName);
@@ -33,7 +35,7 @@ public class NetworkServer : IDisposable
 
     private void OnNetworkReady()
     {
-        networkManager.OnClientConnectedCallback += OnClientDisconnect;
+        networkManager.OnClientDisconnectCallback += OnClientDisconnect;
     }
 
     private void OnClientDisconnect(ulong id)
