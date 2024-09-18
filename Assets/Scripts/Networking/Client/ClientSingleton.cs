@@ -30,7 +30,7 @@ public class ClientSingleton : MonoBehaviour
     }
 
     private void OnDestroy(){
-        ClientGameManager.Dispose();
+        ClientGameManager?.Dispose();
     }
 
 
