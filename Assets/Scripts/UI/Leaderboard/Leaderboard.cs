@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -11,6 +12,7 @@ public class Leaderboard : NetworkBehaviour
     [SerializeField] private LeaderboardEntityDisplay leaderboardPrefab;
 
     private NetworkList<LeaderboardEntityState> leaderboardEntities;
+    private List<LeaderboardEntityDisplay> entityDisplays = new List<LeaderboardEntityDisplay>();
 
     private void Awake()
     {
@@ -21,10 +23,12 @@ public class Leaderboard : NetworkBehaviour
         if (IsClient)
         {
             leaderboardEntities.OnListChanged += HandleLeaderboardEntitiesChanged;
-            foreach(LeaderboardEntityState entity in leaderboardEntities){
-                HandleLeaderboardEntitiesChanged(new NetworkListEvent<LeaderboardEntityState>{
-                    Type=NetworkListEvent<LeaderboardEntityState>.EventType.Add,
-                    Value=entity
+            foreach (LeaderboardEntityState entity in leaderboardEntities)
+            {
+                HandleLeaderboardEntitiesChanged(new NetworkListEvent<LeaderboardEntityState>
+                {
+                    Type = NetworkListEvent<LeaderboardEntityState>.EventType.Add,
+                    Value = entity
                 });
             }
         }
@@ -43,12 +47,31 @@ public class Leaderboard : NetworkBehaviour
 
     private void HandleLeaderboardEntitiesChanged(NetworkListEvent<LeaderboardEntityState> changeEvent)
     {
-        switch(changeEvent.Type){
+        switch (changeEvent.Type)
+        {
             case NetworkListEvent<LeaderboardEntityState>.EventType.Add:
-                Instantiate(leaderboardPrefab,leaderboardEntityHolder);
+                if (!entityDisplays.Any(e => e.ClientId == changeEvent.Value.ClientId))
+                {
+                    LeaderboardEntityDisplay leaderboardEntityDisplay = Instantiate(leaderboardPrefab, leaderboardEntityHolder);
+                    leaderboardEntityDisplay.Initialize(changeEvent.Value.ClientId, changeEvent.Value.PlayerName, changeEvent.Value.Coins);
+                    entityDisplays.Add(leaderboardEntityDisplay);
+                }
                 break;
             case NetworkListEvent<LeaderboardEntityState>.EventType.Remove:
-                
+                LeaderboardEntityDisplay displayRemove = entityDisplays.FirstOrDefault(e => e.ClientId == changeEvent.Value.ClientId);
+                if (displayRemove != null)
+                {
+                    displayRemove.transform.SetParent(null);
+                    Destroy(displayRemove.gameObject);
+                    entityDisplays.Remove(displayRemove);
+                }
+                break;
+            case NetworkListEvent<LeaderboardEntityState>.EventType.Value:
+                LeaderboardEntityDisplay displayUpdate = entityDisplays.FirstOrDefault(e => e.ClientId == changeEvent.Value.ClientId);
+                if (displayUpdate != null)
+                {
+                    displayUpdate.UpdateCoin(changeEvent.Value.Coins);
+                }
                 break;
         }
     }
