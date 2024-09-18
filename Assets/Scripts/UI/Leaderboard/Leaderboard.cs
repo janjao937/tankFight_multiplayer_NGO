@@ -100,6 +100,7 @@ public class Leaderboard : NetworkBehaviour
     }
     private void HandlePlayerDespawned(TankPlayer player)
     {
+        if(IsServer&&player.OwnerClientId==OwnerClientId)return;//hold error on leave game
         if (leaderboardEntities == null) { return; }
 
         foreach (LeaderboardEntityState entity in leaderboardEntities)
