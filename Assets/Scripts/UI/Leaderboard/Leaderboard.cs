@@ -43,9 +43,8 @@ public class Leaderboard : NetworkBehaviour
     private void HandleLeaderboardEntitiesChanged(NetworkListEvent<LeaderboardEntityState> changeEvent)
     {
         switch(changeEvent.Type){
-            case NetworkListEvent<LeaderboardEntityState>.EventType.Add:{
+            case NetworkListEvent<LeaderboardEntityState>.EventType.Add:
                 Instantiate(leaderboardPrefab,leaderboardEntityHolder);
-            }
                 break;
             case NetworkListEvent<LeaderboardEntityState>.EventType.Remove:
                 
@@ -81,7 +80,7 @@ public class Leaderboard : NetworkBehaviour
 
         foreach (LeaderboardEntityState entity in leaderboardEntities)
         {
-            if (entity.ClientId != player.OwnerClientId) { return; }
+            if (entity.ClientId != player.OwnerClientId) { continue; }
             leaderboardEntities.Remove(entity);
             break;
         }
