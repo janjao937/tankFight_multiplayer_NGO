@@ -10,6 +10,7 @@ public class TankPlayer : NetworkBehaviour
 {
     [Header("Reference")]
     [SerializeField] private CinemachineVirtualCamera virtualCamera;
+    [field:SerializeField] public CoinWallet CoinWallet{get;private set;}
     [field: SerializeField] public Health Health { get; private set; }
     [Header("Setting")]
     [SerializeField] private int ownerProprity = 15;
