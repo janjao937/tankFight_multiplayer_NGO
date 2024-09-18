@@ -98,7 +98,8 @@ public class HostGameManager : IDisposable
 
     public async void Dispose()
     {
-        HostSingleton.Instance.StopCoroutine(nameof(HearbeatLobby));
+        HostSingleton.Instance?.StopCoroutine(nameof(HearbeatLobby));//fix error is dont have host singleton
+
         if (!string.IsNullOrEmpty(lobbyId))
         {
             try
