@@ -26,7 +26,7 @@ public class LeaderboardEntityDisplay : MonoBehaviour
         UpdateText();
     }
     private void UpdateText(){
-         displayText.text = $"1) ${this.playerName} - {this.Coins}";
+         displayText.text = $"1) {this.playerName} - {this.Coins}";
     }
 
 }
