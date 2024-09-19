@@ -83,6 +83,8 @@ public class HostGameManager : IDisposable
         NetworkManager.Singleton.NetworkConfig.ConnectionData = payloadByte;
 
         NetworkManager.Singleton.StartHost();
+        NetworkServer.OnClientLeft += HandleClientLeft;
+
         NetworkManager.Singleton.SceneManager.LoadScene(_gameSceneName, UnityEngine.SceneManagement.LoadSceneMode.Single);
     }
 
@@ -96,9 +98,14 @@ public class HostGameManager : IDisposable
         }
     }
 
-    public async void Dispose()
+    public void Dispose()
     {
-        HostSingleton.Instance?.StopCoroutine(nameof(HearbeatLobby));//fix error is dont have host singleton
+       ShutDown();
+    }
+
+    public async void ShutDown()
+    {
+         HostSingleton.Instance?.StopCoroutine(nameof(HearbeatLobby));//fix error is dont have host singleton
 
         if (!string.IsNullOrEmpty(lobbyId))
         {
@@ -112,6 +119,18 @@ public class HostGameManager : IDisposable
             }
             lobbyId = string.Empty;
         }
+        NetworkServer.OnClientLeft -= HandleClientLeft;
         NetworkServer?.Dispose();
+    }
+
+    private async void HandleClientLeft(string authId)
+    {
+       try{
+            await LobbyService.Instance.RemovePlayerAsync(lobbyId,authId);
+
+       }
+       catch(LobbyServiceException e){
+        Debug.Log(e);
+       }
     }
 }

@@ -13,7 +13,7 @@ using Unity.Services.Relay.Models;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class ClientGameManager:IDisposable
+public class ClientGameManager : IDisposable
 {
     private const string _menuSceneName = "Menu";
     private const string _connectionType = "dtls";
@@ -66,8 +66,15 @@ public class ClientGameManager:IDisposable
         SceneManager.LoadScene(_menuSceneName);
     }
 
+    public void Disconnect()
+    {
+        networkClient.Disconnect();
+    }
+
     public void Dispose()
     {
         networkClient?.Dispose();
     }
+
+
 }

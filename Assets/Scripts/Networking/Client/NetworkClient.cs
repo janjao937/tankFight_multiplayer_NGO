@@ -21,6 +21,10 @@ public class NetworkClient : IDisposable
     {
         if (id != 0 && id != networkManager.LocalClientId) { return; }
 
+        Disconnect();
+    }
+    public void Disconnect()
+    {
         if (SceneManager.GetActiveScene().name != _menuSceneName)
         {
             SceneManager.LoadScene(_menuSceneName);
