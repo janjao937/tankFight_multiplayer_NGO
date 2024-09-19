@@ -18,8 +18,8 @@ public class HealingZone : NetworkBehaviour
     [SerializeField] private int coinsPerTick = 10;
     [SerializeField] private int healthPerTick = 10;
 
-    private float remainingCooldown ;
-    private float tickTimer ;
+    private float remainingCooldown;
+    private float tickTimer;
 
     private List<TankPlayer> playersInZone = new List<TankPlayer>();
     private NetworkVariable<int> healPower = new NetworkVariable<int>();
@@ -45,14 +45,6 @@ public class HealingZone : NetworkBehaviour
         }
     }
 
-
-
-    private void HandleHealPowerChanged(int oldHealPower, int newHealPower)
-    {
-        // Debug.Log("current bar value"+newValue);
-        healPowerBar.fillAmount = (float)newHealPower/maxHealPower;
-    }
-
     private void Update()
     {
         if (!IsServer) return;
@@ -69,7 +61,9 @@ public class HealingZone : NetworkBehaviour
                 return;
             }
         }
+
         tickTimer += Time.deltaTime;
+
         if (tickTimer >= (1 / healTickRate))
         {
             foreach (TankPlayer player in playersInZone)
@@ -100,13 +94,17 @@ public class HealingZone : NetworkBehaviour
         // Debug.Log("Entered Healing Zone:" + player.PlayerName.Value);
     }
 
-
-
     private void OnTriggerExit2D(Collider2D col)
     {
         if (!IsServer) { return; }
         if (!col.attachedRigidbody.TryGetComponent<TankPlayer>(out TankPlayer player)) { return; }
         playersInZone.Remove(player);
         // Debug.Log("Exit Healing Zone:" + player.PlayerName.Value);
+    }
+
+    private void HandleHealPowerChanged(int oldHealPower, int newHealPower)
+    {
+        // Debug.Log("current bar value"+newValue);
+        healPowerBar.fillAmount = (float)newHealPower / maxHealPower;
     }
 }
