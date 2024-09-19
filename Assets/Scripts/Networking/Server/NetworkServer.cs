@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.Netcode;
+using Unity.Netcode.Transports.UTP;
 using UnityEngine;
 
 public class NetworkServer : IDisposable
@@ -48,6 +49,12 @@ public class NetworkServer : IDisposable
 
             OnClientLeft?.Invoke(autId);
         }
+    }
+    public bool OpenConnection(string ip, int port)
+    {
+        UnityTransport transport = networkManager.gameObject.GetComponent<UnityTransport>();
+        transport.SetConnectionData(ip,(ushort)port);
+        return networkManager.StartServer();
     }
     public UserData GetUserDataByClientId(ulong clientId)
     {

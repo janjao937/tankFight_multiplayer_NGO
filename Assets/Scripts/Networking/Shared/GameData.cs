@@ -21,16 +21,16 @@ public class UserData
 {
   public string UserName;
   public string UserAuthId;
-  public GameInfo userGamePreferences;
+  public GameInfo UserGamePreferences;
 
 }
 
 [Serializable]
 public class GameInfo
 {
-    public Map map;
-    public GameMode gameMode;
-    public GameQueue gameQueue;
+    public Map Map;
+    public GameMode GameMode;
+    public GameQueue GameQueue;
 
     public string ToMultiplayQueue()
     {

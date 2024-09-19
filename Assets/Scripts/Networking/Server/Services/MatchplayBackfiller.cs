@@ -73,7 +73,7 @@ public class MatchplayBackfiller : IDisposable
             return;
         }
 
-        Player matchmakerPlayer = new Player(userData.UserAuthId, userData.userGamePreferences);
+        Player matchmakerPlayer = new Player(userData.UserAuthId, userData.UserGamePreferences);
 
         MatchProperties.Players.Add(matchmakerPlayer);
         MatchProperties.Teams[0].PlayerIds.Add(matchmakerPlayer.Id);
