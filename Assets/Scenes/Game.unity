@@ -554,6 +554,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   leaderboardEntityHolder: {fileID: 2100584785}
   leaderboardPrefab: {fileID: -8992403754009907526, guid: df14c776396310c45b53316f1e4dd271, type: 3}
+  entitysToDisplay: 8
 --- !u!1001 &438875815
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2188,7 +2189,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 152ed95cfe8b8754e9d374809a84e83a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playerPrefab: {fileID: 5471629790158378036, guid: 2668b513833263b4c95496ffb0684823, type: 3}
+  playerPrefab: {fileID: 8862800384716143225, guid: 2668b513833263b4c95496ffb0684823, type: 3}
+  keptCoinPercentage: 50
 --- !u!4 &1503237537
 Transform:
   m_ObjectHideFlags: 0
