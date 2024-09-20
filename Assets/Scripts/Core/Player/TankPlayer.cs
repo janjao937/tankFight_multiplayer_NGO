@@ -6,11 +6,13 @@ using Unity.Collections;
 using Unity.Netcode;
 using UnityEngine;
 
+
 public class TankPlayer : NetworkBehaviour
 {
     [Header("Reference")]
     [SerializeField] private CinemachineVirtualCamera virtualCamera;
     [SerializeField] private SpriteRenderer minimapIcon;
+    [SerializeField] private Texture2D cursor;
     [field:SerializeField] public CoinWallet CoinWallet{get;private set;}
     [field: SerializeField] public Health Health { get; private set; }
 
@@ -35,6 +37,8 @@ public class TankPlayer : NetworkBehaviour
         {
             virtualCamera.Priority = ownerProprity;
             minimapIcon.color = ownerColor;
+            Cursor.SetCursor(cursor,new Vector2(cursor.width/2,cursor.height/2),CursorMode.Auto);
+            
         }
     }
 

@@ -1,4 +1,5 @@
 using System;
+using TMPro;
 
 public enum Map
 {
@@ -34,7 +35,11 @@ public class GameInfo
 
     public string ToMultiplayQueue()
     {
-        return "";
+        return GameQueue switch{
+          GameQueue.Solo=>"solo-queue",
+          GameQueue.Team=>"team-queue",
+          _=>"solo-queue"
+        };
     }
 }
 

@@ -19,13 +19,23 @@ public class ClientGameManager : IDisposable
     private const string _connectionType = "dtls";
     private JoinAllocation allocation;
     private NetworkClient networkClient;
+    private MatchplayMatchmaker matchmaker;
+    private UserData userData;
     public async Task<bool> InitAsync()
     {
         //Authenticate player
         await UnityServices.InitializeAsync();
 
         networkClient = new NetworkClient(NetworkManager.Singleton);
+        matchmaker = new MatchplayMatchmaker();
+
         AuthState authState = await AuthenticationWrapper.GetAuth();
+
+        this.userData = new UserData
+        {
+            UserName = PlayerPrefs.GetString(NameSelector.PlayerNameKey, "Missing Name"),
+            UserAuthId = AuthenticationService.Instance.PlayerId
+        };
 
         if (authState == AuthState.Authenticated)
         {
@@ -49,11 +59,13 @@ public class ClientGameManager : IDisposable
         RelayServerData relayServerData = new RelayServerData(allocation, _connectionType);
         transport.SetRelayServerData(relayServerData);
 
-        UserData userData = new UserData()
-        {
-            UserName = PlayerPrefs.GetString(NameSelector.PlayerNameKey, "Missing Name"),
-            UserAuthId = AuthenticationService.Instance.PlayerId
-        };
+        // UserData userData = new UserData
+        // {
+        //     UserName = PlayerPrefs.GetString(NameSelector.PlayerNameKey, "Missing Name"),
+        //     UserAuthId = AuthenticationService.Instance.PlayerId
+        // };
+
+
         string payload = JsonUtility.ToJson(userData);
         byte[] payloadByte = Encoding.UTF8.GetBytes(payload);
 
@@ -65,7 +77,17 @@ public class ClientGameManager : IDisposable
     {
         SceneManager.LoadScene(_menuSceneName);
     }
+    private async Task<MatchmakerPollingResult> GetMatchAsync()
+    {
+        MatchmakingResult matchmakingResult = await matchmaker.Matchmake(userData);
+        if (matchmakingResult.result == MatchmakerPollingResult.Success)
+        {
+            //connect server
 
+        }
+        return matchmakingResult.result;
+
+    }
     public void Disconnect()
     {
         networkClient.Disconnect();
