@@ -13,14 +13,16 @@ public class ServerGameManager : IDisposable
     private int serverPort;
     private int queryPort;
     private MatchplayBackfiller backfiller;
-    private NetworkServer networkServer;
     private MultiplayAllocationService multiplayAllocationService;
+
+    public NetworkServer NetworkServer { get; private set; }
+
     public ServerGameManager(string serverIP, int serverPort, int queryPort, NetworkManager manager)
     {
         this.serverIP = serverIP;
         this.serverPort = serverPort;
         this.queryPort = queryPort;
-        networkServer = new NetworkServer(manager);
+        NetworkServer = new NetworkServer(manager);
         multiplayAllocationService = new MultiplayAllocationService();
     }
     public async Task StartGameServerAsync()
@@ -32,8 +34,8 @@ public class ServerGameManager : IDisposable
             if (matchMakerPayload != null)
             {
                 await StartBackfill(matchMakerPayload);
-                networkServer.OnUserJoined += UserJoined;
-                networkServer.OnUserLeft += UserLeft;
+                NetworkServer.OnUserJoined += UserJoined;
+                NetworkServer.OnUserLeft += UserLeft;
             }
             else
             {
@@ -44,7 +46,7 @@ public class ServerGameManager : IDisposable
         {
             Debug.Log(e);
         }
-        if (!networkServer.OpenConnection(serverIP, serverPort))
+        if (!NetworkServer.OpenConnection(serverIP, serverPort))
         {
             Debug.LogWarning("NetworkServer did not start as expected.");
             return;
@@ -106,12 +108,12 @@ public class ServerGameManager : IDisposable
     }
     public void Dispose()
     {
-        networkServer.OnUserJoined -= UserJoined;
-        networkServer.OnUserLeft -= UserLeft;
-        
+        NetworkServer.OnUserJoined -= UserJoined;
+        NetworkServer.OnUserLeft -= UserLeft;
+
         backfiller?.Dispose();
         multiplayAllocationService?.Dispose();
-        networkServer?.Dispose();
+        NetworkServer?.Dispose();
     }
 
 

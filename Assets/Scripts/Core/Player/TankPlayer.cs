@@ -13,7 +13,7 @@ public class TankPlayer : NetworkBehaviour
     [SerializeField] private CinemachineVirtualCamera virtualCamera;
     [SerializeField] private SpriteRenderer minimapIcon;
     [SerializeField] private Texture2D cursor;
-    [field:SerializeField] public CoinWallet CoinWallet{get;private set;}
+    [field: SerializeField] public CoinWallet CoinWallet { get; private set; }
     [field: SerializeField] public Health Health { get; private set; }
 
     [Header("Setting")]
@@ -29,7 +29,17 @@ public class TankPlayer : NetworkBehaviour
     {
         if (IsServer)
         {
-            UserData userData = HostSingleton.Instance.HostGameManager.NetworkServer.GetUserDataByClientId(OwnerClientId);
+            UserData userData = null;
+            if (IsHost)
+            {
+                userData = HostSingleton.Instance.HostGameManager.NetworkServer.GetUserDataByClientId(OwnerClientId);
+
+            }
+            else
+            {
+                userData = ServerSingleton.Instance.ServerGameManager.NetworkServer.GetUserDataByClientId(OwnerClientId);
+            }
+
             PlayerName.Value = userData.UserName;
             OnPlayerSpawned?.Invoke(this);
         }
@@ -37,8 +47,8 @@ public class TankPlayer : NetworkBehaviour
         {
             virtualCamera.Priority = ownerProprity;
             minimapIcon.color = ownerColor;
-            Cursor.SetCursor(cursor,new Vector2(cursor.width/2,cursor.height/2),CursorMode.Auto);
-            
+            Cursor.SetCursor(cursor, new Vector2(cursor.width / 2, cursor.height / 2), CursorMode.Auto);
+
         }
     }
 
