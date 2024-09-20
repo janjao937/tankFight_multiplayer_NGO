@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Security.Cryptography;
@@ -26,29 +27,55 @@ public class MainMenu : MonoBehaviour
 
     public async void FindMatchPressed()
     {
-        if(isCancelling){
+        if (isCancelling)
+        {
             return;
         }
-        if(isMatchmaking){
+        if (isMatchmaking)
+        {
             queStateText.text = "Cancelling...";
             isCancelling = true;
-            //Cancle match
+
+            await ClientSingleton.Instance.ClientGameManager.CancelMatchmaking(); //Cancle match
 
             isCancelling = false;
             isMatchmaking = false;
 
             findMatchButtonText.text = "Find Match";
-            queStateText.text =string.Empty;
+            queStateText.text = string.Empty;
             return;
         }
-        
-        //start queue
+
+        ClientSingleton.Instance.ClientGameManager.MatchmakeAsync(OnMatchMake); //start queue
         findMatchButtonText.text = "Cancel";
         queStateText.text = "Searching...";
-    
+
         isMatchmaking = true;
 
     }
+
+    private void OnMatchMake(MatchmakerPollingResult result)
+    {
+        switch (result)
+        {
+            case MatchmakerPollingResult.Success:
+                queStateText.text = "Connecting...";
+                break;
+            case MatchmakerPollingResult.TicketCreationError:
+                queStateText.text = "TicketCreation Error";
+                break;
+            case MatchmakerPollingResult.TicketRetrievalError:
+                queStateText.text = "TicketRetrieval Error ";
+                break;
+            case MatchmakerPollingResult.TicketCancellationError:
+                queStateText.text = "TicketCancellation Error";
+                break;
+            case MatchmakerPollingResult.MatchAssignmentError:
+                queStateText.text = "MatchAssignmentError Error";
+                break;
+        }
+    }
+
     public async void StartHost()
     {
         await HostSingleton.Instance.HostGameManager.StartHostAsync();

@@ -22,7 +22,7 @@ public class HostGameManager : IDisposable
     private string lobbyId = default;
     private const int MaxConnections = 20;
 
-    public NetworkServer NetworkServer{get;private set;}
+    public NetworkServer NetworkServer { get; private set; }
     public async Task StartHostAsync()
     {
         try
@@ -100,37 +100,40 @@ public class HostGameManager : IDisposable
 
     public void Dispose()
     {
-       ShutDown();
+        ShutDown();
     }
 
     public async void ShutDown()
     {
-         HostSingleton.Instance?.StopCoroutine(nameof(HearbeatLobby));//fix error is dont have host singleton
 
-        if (!string.IsNullOrEmpty(lobbyId))
+
+        if (string.IsNullOrEmpty(lobbyId)) return;
+
+        HostSingleton.Instance.StopCoroutine(nameof(HearbeatLobby));//fix error is dont have host singleton:maybr fixed it
+        try
         {
-            try
-            {
-                await Lobbies.Instance.DeleteLobbyAsync(lobbyId);
-            }
-            catch (LobbyServiceException e)
-            {
-                Debug.Log(e);
-            }
-            lobbyId = string.Empty;
+            await Lobbies.Instance.DeleteLobbyAsync(lobbyId);
         }
+        catch (LobbyServiceException e)
+        {
+            Debug.Log(e);
+        }
+        lobbyId = string.Empty;
+
         NetworkServer.OnClientLeft -= HandleClientLeft;
         NetworkServer?.Dispose();
     }
 
     private async void HandleClientLeft(string authId)
     {
-       try{
-            await LobbyService.Instance.RemovePlayerAsync(lobbyId,authId);
+        try
+        {
+            await LobbyService.Instance.RemovePlayerAsync(lobbyId, authId);
 
-       }
-       catch(LobbyServiceException e){
-        Debug.Log(e);
-       }
+        }
+        catch (LobbyServiceException e)
+        {
+            Debug.Log(e);
+        }
     }
 }
