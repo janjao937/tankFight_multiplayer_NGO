@@ -48,6 +48,7 @@ public class Leaderboard : NetworkBehaviour
 
     private void HandleLeaderboardEntitiesChanged(NetworkListEvent<LeaderboardEntityState> changeEvent)
     {
+        if (!gameObject.scene.isLoaded) { return; }
         switch (changeEvent.Type)
         {
             case NetworkListEvent<LeaderboardEntityState>.EventType.Add:
@@ -89,7 +90,7 @@ public class Leaderboard : NetworkBehaviour
         {
             if (myDisplay.transform.GetSiblingIndex() >= entitysToDisplay)
             {
-                leaderboardEntityHolder.GetChild(entitysToDisplay-1).gameObject.SetActive(false);
+                leaderboardEntityHolder.GetChild(entitysToDisplay - 1).gameObject.SetActive(false);
                 myDisplay.gameObject.SetActive(true);
             }
         }

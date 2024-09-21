@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Unity.Netcode;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 public class ProjectileLauncher : NetworkBehaviour
 {
@@ -19,6 +20,7 @@ public class ProjectileLauncher : NetworkBehaviour
     [SerializeField] private float fireRate = 0.75f;
     [SerializeField] private float muzzleFlashDuration = 0.075f;
     [SerializeField] private int costToFire = 0;
+    private bool isPointerOverUI = default;
     private bool isFire;
     private float muzzleFlashTimer;
     private float timer;
@@ -37,6 +39,10 @@ public class ProjectileLauncher : NetworkBehaviour
     }
     private void HandlePrimaryFire(bool isFire)
     {
+        if (isFire)
+        {
+            if (isPointerOverUI) return;
+        }
         this.isFire = isFire;
     }
     private void Update()
@@ -49,14 +55,17 @@ public class ProjectileLauncher : NetworkBehaviour
                 muzzleFlash.SetActive(false);
             }
         }
+
         if (!IsOwner) return;
+        isPointerOverUI = EventSystem.current.IsPointerOverGameObject();
+
         if (timer > 0)
         {
             timer -= Time.deltaTime;
         }
         if (!isFire) { return; }
         if (timer > 0) { return; }
-        if(coinWallet.TotalCoins.Value<costToFire)return;
+        if (coinWallet.TotalCoins.Value < costToFire) return;
         PrimaryFireServerRpc(projectileSpawnPoint.position, projectileSpawnPoint.up);
         SpawnDummyProjectile(projectileSpawnPoint.position, projectileSpawnPoint.up);
 
@@ -67,9 +76,9 @@ public class ProjectileLauncher : NetworkBehaviour
     [ServerRpc]
     private void PrimaryFireServerRpc(Vector2 spawnPos, Vector2 dir)
     {
-        if(coinWallet.TotalCoins.Value<costToFire)return;
+        if (coinWallet.TotalCoins.Value < costToFire) return;
         coinWallet.SpendCoins(costToFire);
-        
+
         GameObject projectileInstance = Instantiate(serverProjectilePrefab, spawnPos, Quaternion.identity);
         projectileInstance.transform.up = dir;
         Physics2D.IgnoreCollision(playerCollider, projectileInstance.GetComponent<Collider2D>());
