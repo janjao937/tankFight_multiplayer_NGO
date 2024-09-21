@@ -10,6 +10,7 @@ using UnityEngine.UI;
 
 public class MainMenu : MonoBehaviour
 {
+    [SerializeField] private Toggle privateLobbyToggle;
     [SerializeField] private Toggle teamToggle;
     [SerializeField] private TMP_InputField joinCodeField;
     [SerializeField] private TMP_Text findMatchButtonText;
@@ -99,7 +100,7 @@ public class MainMenu : MonoBehaviour
     {
         if (isBusy) { return; }
         isBusy = true;
-        await HostSingleton.Instance.HostGameManager.StartHostAsync();
+        await HostSingleton.Instance.HostGameManager.StartHostAsync(privateLobbyToggle.isOn);
         isBusy = false;
     }
 
