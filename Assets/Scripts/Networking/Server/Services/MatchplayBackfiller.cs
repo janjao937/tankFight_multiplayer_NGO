@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Unity.Services.Matchmaker;
 using Unity.Services.Matchmaker.Models;
@@ -55,7 +56,7 @@ public class MatchplayBackfiller : IDisposable
 
         BackfillLoop();
     }
-
+/*
     public void AddPlayerToMatch(UserData userData)
     {
         if (!IsBackfilling)
@@ -69,7 +70,7 @@ public class MatchplayBackfiller : IDisposable
             Debug.LogWarningFormat("User: {0} - {1} already in Match. Ignoring add.",
                 userData.UserName,
                 userData.UserAuthId);
-                
+
             return;
         }
 
@@ -79,7 +80,7 @@ public class MatchplayBackfiller : IDisposable
         MatchProperties.Teams[0].PlayerIds.Add(matchmakerPlayer.Id);
         localDataDirty = true;
     }
-
+*/
     public int RemovePlayerFromMatch(string userId)
     {
         Player playerToRemove = GetPlayerById(userId);
@@ -90,7 +91,8 @@ public class MatchplayBackfiller : IDisposable
         }
 
         MatchProperties.Players.Remove(playerToRemove);
-        MatchProperties.Teams[0].PlayerIds.Remove(userId);
+        // MatchProperties.Teams[0].PlayerIds.Remove(userId);
+        GetTeamByUserId(userId).PlayerIds.Remove(userId);
         localDataDirty = true;
 
         return MatchPlayerCount;
@@ -101,6 +103,10 @@ public class MatchplayBackfiller : IDisposable
         return MatchPlayerCount < maxPlayers;
     }
 
+    public Team GetTeamByUserId(string userId)
+    {
+        return MatchProperties.Teams.FirstOrDefault(t => t.PlayerIds.Contains(userId));
+    }
     private Player GetPlayerById(string userId)
     {
         return MatchProperties.Players.FirstOrDefault(
