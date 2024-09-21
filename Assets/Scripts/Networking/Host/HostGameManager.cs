@@ -15,6 +15,8 @@ using Unity.Services.Authentication;
 
 public class HostGameManager : IDisposable
 {
+    private NetworkObject playerPrefab;
+
     private const string _gameSceneName = "Game";
     private const string _connectionType = "dtls";
     private Allocation allocation;
@@ -23,6 +25,10 @@ public class HostGameManager : IDisposable
     private const int MaxConnections = 20;
 
     public NetworkServer NetworkServer { get; private set; }
+
+    public HostGameManager(NetworkObject playerPrefab){
+        this.playerPrefab = playerPrefab;
+    }
     public async Task StartHostAsync()
     {
         try
@@ -70,7 +76,7 @@ public class HostGameManager : IDisposable
             Debug.Log(e);
             return;
         }
-        NetworkServer = new NetworkServer(NetworkManager.Singleton);
+        NetworkServer = new NetworkServer(NetworkManager.Singleton,this.playerPrefab);
 
         UserData userData = new UserData()
         {

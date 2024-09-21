@@ -1,22 +1,25 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Unity.Netcode;
 using Unity.Netcode.Transports.UTP;
 using UnityEngine;
 
 public class NetworkServer : IDisposable
 {
+    private NetworkObject playerPrefab;
     private NetworkManager networkManager;
     private Dictionary<ulong, string> clientIdToAuth = new Dictionary<ulong, string>();
     private Dictionary<string, UserData> authIdToUserData = new Dictionary<string, UserData>();
-
     public Action<UserData> OnUserJoined;
     public Action<UserData> OnUserLeft;
     public Action<string> OnClientLeft;
-    public NetworkServer(NetworkManager networkManager)
+    public NetworkServer(NetworkManager networkManager, NetworkObject playerPrefab)
     {
         this.networkManager = networkManager;
+        this.playerPrefab = playerPrefab;
+
         networkManager.ConnectionApprovalCallback += ApprovalCheck;
         networkManager.OnServerStarted += OnNetworkReady;
     }
@@ -31,12 +34,18 @@ public class NetworkServer : IDisposable
 
         OnUserJoined?.Invoke(userData);
 
+        _ = SpawnPlayerDelayed(req.ClientNetworkId);
         res.Approved = true;
-        res.Position = SpawnPoint.GetRandomSpawnPos();
-        res.Rotation = Quaternion.identity;
-        res.CreatePlayerObject = true;
+        res.CreatePlayerObject = false;
 
         // Debug.Log(userData.UserName);
+    }
+
+    private async Task SpawnPlayerDelayed(ulong clientId)
+    {
+        await Task.Delay(1000);
+        NetworkObject playerInit = GameObject.Instantiate(playerPrefab, SpawnPoint.GetRandomSpawnPos(), Quaternion.identity);
+        playerInit.SpawnAsPlayerObject(clientId);
     }
 
     private void OnNetworkReady()
@@ -57,7 +66,7 @@ public class NetworkServer : IDisposable
     public bool OpenConnection(string ip, int port)
     {
         UnityTransport transport = networkManager.gameObject.GetComponent<UnityTransport>();
-        transport.SetConnectionData(ip,(ushort)port);
+        transport.SetConnectionData(ip, (ushort)port);
         return networkManager.StartServer();
     }
     public UserData GetUserDataByClientId(ulong clientId)

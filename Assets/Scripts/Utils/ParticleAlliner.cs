@@ -5,16 +5,16 @@ using UnityEngine;
 [RequireComponent(typeof(ParticleSystem))]
 public class ParticleAlliner : MonoBehaviour
 {
-    private ParticleSystem.MainModule particleSystem;
+    private ParticleSystem.MainModule particle;
 
     void Start()
     {
-        this.particleSystem = GetComponent<ParticleSystem>().main;
+        this.particle = GetComponent<ParticleSystem>().main;
     }
 
 
     void Update()
     {
-        particleSystem.startRotation = -transform.rotation.eulerAngles.z * Mathf.Deg2Rad;
+        particle.startRotation = -transform.rotation.eulerAngles.z * Mathf.Deg2Rad;
     }
 }

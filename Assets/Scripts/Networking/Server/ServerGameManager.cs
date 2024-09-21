@@ -8,7 +8,7 @@ using UnityEngine;
 
 public class ServerGameManager : IDisposable
 {
-    private const string _gameSceneName = "Game";
+    // private const string _gameSceneName = "Game";
     private string serverIP;
     private int serverPort;
     private int queryPort;
@@ -17,12 +17,12 @@ public class ServerGameManager : IDisposable
 
     public NetworkServer NetworkServer { get; private set; }
 
-    public ServerGameManager(string serverIP, int serverPort, int queryPort, NetworkManager manager)
+    public ServerGameManager(string serverIP, int serverPort, int queryPort, NetworkManager manager,NetworkObject playerPrefab)
     {
         this.serverIP = serverIP;
         this.serverPort = serverPort;
         this.queryPort = queryPort;
-        NetworkServer = new NetworkServer(manager);
+        NetworkServer = new NetworkServer(manager,playerPrefab);
         multiplayAllocationService = new MultiplayAllocationService();
     }
     public async Task StartGameServerAsync()
@@ -52,7 +52,7 @@ public class ServerGameManager : IDisposable
             return;
         }
 
-        NetworkManager.Singleton.SceneManager.LoadScene(_gameSceneName, UnityEngine.SceneManagement.LoadSceneMode.Single);
+        // NetworkManager.Singleton.SceneManager.LoadScene(_gameSceneName, UnityEngine.SceneManagement.LoadSceneMode.Single);
     }
 
     private async Task StartBackfill(MatchmakingResults payload)
