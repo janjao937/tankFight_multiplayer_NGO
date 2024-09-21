@@ -13,6 +13,7 @@ using Unity.Services.Relay.Models;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
+
 public class ClientGameManager : IDisposable
 {
     private const string _menuSceneName = "Menu";
@@ -86,9 +87,11 @@ public class ClientGameManager : IDisposable
         return matchmakingResult.result;
 
     }
-    public async void MatchmakeAsync(Action<MatchmakerPollingResult> onMatchmakeResponse)
+    public async void MatchmakeAsync(bool isTeamQueue, Action<MatchmakerPollingResult> onMatchmakeResponse)
     {
         if (matchmaker.IsMatchmaking) { return; }
+
+        userData.UserGamePreferences.GameQueue = isTeamQueue ? GameQueue.Team : GameQueue.Solo;
         MatchmakerPollingResult matchResult = await GetMatchAsync();
         onMatchmakeResponse?.Invoke(matchResult);
     }
