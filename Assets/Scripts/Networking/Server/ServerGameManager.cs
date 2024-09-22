@@ -28,6 +28,7 @@ public class ServerGameManager : IDisposable
     public async Task StartGameServerAsync()
     {
         await multiplayAllocationService.BeginServerCheck();
+        
         try
         {
             MatchmakingResults matchMakerPayload = await GetMatchmakerPayload();
@@ -44,7 +45,7 @@ public class ServerGameManager : IDisposable
         }
         catch (Exception e)
         {
-            Debug.Log(e);
+            Debug.LogWarning(e);
         }
         if (!NetworkServer.OpenConnection(serverIP, serverPort))
         {

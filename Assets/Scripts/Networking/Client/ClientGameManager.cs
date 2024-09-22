@@ -32,14 +32,13 @@ public class ClientGameManager : IDisposable
 
         AuthState authState = await AuthenticationWrapper.GetAuth();
 
-        this.userData = new UserData
-        {
-            UserName = PlayerPrefs.GetString(NameSelector.PlayerNameKey, "Missing Name"),
-            UserAuthId = AuthenticationService.Instance.PlayerId
-        };
-
         if (authState == AuthState.Authenticated)
         {
+            this.userData = new UserData
+            {
+                UserName = PlayerPrefs.GetString(NameSelector.PlayerNameKey, "Missing Name"),
+                UserAuthId = AuthenticationService.Instance.PlayerId
+            };
             return true;
         }
         return false;
@@ -51,8 +50,8 @@ public class ClientGameManager : IDisposable
 
         NetworkManager.Singleton.NetworkConfig.ConnectionData = payloadByte;
         NetworkManager.Singleton.StartClient();
-
     }
+    
     public async Task StartClientAsync(string joinCode)
     {
         try
