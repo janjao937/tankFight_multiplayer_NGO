@@ -16,7 +16,7 @@ public class GameHUD : NetworkBehaviour
         if (IsClient)
         {
             lobbyCode.OnValueChanged += HandleLobbyCodeChange;
-            HandleLobbyCodeChange(string.Empty,lobbyCode.Value);
+            HandleLobbyCodeChange(string.Empty, lobbyCode.Value);
         }
         if (!IsHost) return;
 
