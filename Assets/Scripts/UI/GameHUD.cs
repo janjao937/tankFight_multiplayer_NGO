@@ -7,24 +7,24 @@ using UnityEngine;
 public class GameHUD : NetworkBehaviour
 {
     [SerializeField] private TMP_Text lobbyCodeText = default;
-    private NetworkVariable<FixedString32Bytes> lobbyCode = new NetworkVariable<FixedString32Bytes>("");
+    // private NetworkVariable<FixedString32Bytes> lobbyCode = new NetworkVariable<FixedString32Bytes>("");
 
     public override void OnNetworkSpawn()
     {
         if (IsClient)
         {
-            lobbyCode.OnValueChanged += HandleLobbyCodeChange;
-            HandleLobbyCodeChange(string.Empty, lobbyCode.Value);
+            // lobbyCode.OnValueChanged += HandleLobbyCodeChange;
+            // HandleLobbyCodeChange(string.Empty, lobbyCode.Value);
         }
         if (!IsHost) return;
         
-        lobbyCode.Value = HostSingleton.Instance.HostGameManager.JoinCode;
+        // lobbyCode.Value = HostSingleton.Instance.HostGameManager.JoinCode;
     }
     public override void OnNetworkDespawn()
     {
         if (IsClient)
         {
-            lobbyCode.OnValueChanged -= HandleLobbyCodeChange;
+            // lobbyCode.OnValueChanged -= HandleLobbyCodeChange;
         }
     }
 
