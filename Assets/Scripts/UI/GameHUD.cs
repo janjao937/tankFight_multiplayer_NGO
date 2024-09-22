@@ -1,6 +1,3 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using TMPro;
 using Unity.Collections;
 using Unity.Netcode;
@@ -20,7 +17,7 @@ public class GameHUD : NetworkBehaviour
             HandleLobbyCodeChange(string.Empty, lobbyCode.Value);
         }
         if (!IsHost) return;
-
+        
         lobbyCode.Value = HostSingleton.Instance.HostGameManager.JoinCode;
     }
     public override void OnNetworkDespawn()
