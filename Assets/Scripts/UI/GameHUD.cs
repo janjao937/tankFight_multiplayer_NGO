@@ -8,7 +8,7 @@ public class GameHUD : NetworkBehaviour
 {
     [SerializeField] private TMP_Text lobbyCodeText = default;
     // private NetworkVariable<FixedString32Bytes> lobbyCode = new NetworkVariable<FixedString32Bytes>(""); //have error on this
-
+  
     public override void OnNetworkSpawn()
     {
         if (IsClient)
