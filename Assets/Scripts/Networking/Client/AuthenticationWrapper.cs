@@ -12,7 +12,7 @@ public static class AuthenticationWrapper
 
     public static async Task<AuthState> GetAuth(int maxTries = 5)
     {
-        if (AuthState == AuthState.Authenticating)
+        if (AuthState == AuthState.Authenticated)
         {
             return AuthState;
         }

@@ -8,7 +8,7 @@ public class HostSingleton : MonoBehaviour
 {
 
     private static HostSingleton instance;
-    public HostGameManager HostGameManager;
+    public HostGameManager HostGameManager { get; private set; }
     public static HostSingleton Instance
     {
         get
@@ -17,7 +17,7 @@ public class HostSingleton : MonoBehaviour
             instance = FindObjectOfType<HostSingleton>();
             if (instance == null)
             {
-                Debug.LogWarning("No HostSingleton in this scene");
+                // Debug.LogWarning("No HostSingleton in this scene");
                 return null;
 
             }

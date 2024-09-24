@@ -16,7 +16,7 @@ public class ClientSingleton : MonoBehaviour
             instance = FindObjectOfType<ClientSingleton>();
             if (instance == null)
             {
-                Debug.LogWarning("No Client singleton in this scene");
+                // Debug.LogWarning("No Client singleton in this scene");
                 return null;
 
             }
