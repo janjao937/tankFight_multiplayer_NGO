@@ -21,7 +21,7 @@ public class ClientGameManager : IDisposable
     private JoinAllocation allocation;
     private NetworkClient networkClient;
     private MatchplayMatchmaker matchmaker;
-    private UserData userData;
+    public UserData UserData { get; private set; }
     public async Task<bool> InitAsync()
     {
         //Authenticate player
@@ -34,7 +34,7 @@ public class ClientGameManager : IDisposable
 
         if (authState == AuthState.Authenticated)
         {
-            this.userData = new UserData
+            this.UserData = new UserData
             {
                 UserName = PlayerPrefs.GetString(NameSelector.PlayerNameKey, "Missing Name"),
                 UserAuthId = AuthenticationService.Instance.PlayerId
@@ -45,13 +45,13 @@ public class ClientGameManager : IDisposable
     }
     private void ConnectClient()
     {
-        string payload = JsonUtility.ToJson(userData);
+        string payload = JsonUtility.ToJson(UserData);
         byte[] payloadByte = Encoding.UTF8.GetBytes(payload);
 
         NetworkManager.Singleton.NetworkConfig.ConnectionData = payloadByte;
         NetworkManager.Singleton.StartClient();
     }
-    
+
     public async Task StartClientAsync(string joinCode)
     {
         try
@@ -77,7 +77,7 @@ public class ClientGameManager : IDisposable
     }
     private async Task<MatchmakerPollingResult> GetMatchAsync()
     {
-        MatchmakingResult matchmakingResult = await matchmaker.Matchmake(userData);
+        MatchmakingResult matchmakingResult = await matchmaker.Matchmake(UserData);
         if (matchmakingResult.result == MatchmakerPollingResult.Success)
         {
             //connect server
@@ -90,7 +90,7 @@ public class ClientGameManager : IDisposable
     {
         if (matchmaker.IsMatchmaking) { return; }
 
-        userData.UserGamePreferences.GameQueue = isTeamQueue ? GameQueue.Team : GameQueue.Solo;
+        UserData.UserGamePreferences.GameQueue = isTeamQueue ? GameQueue.Team : GameQueue.Solo;
         MatchmakerPollingResult matchResult = await GetMatchAsync();
         onMatchmakeResponse?.Invoke(matchResult);
     }

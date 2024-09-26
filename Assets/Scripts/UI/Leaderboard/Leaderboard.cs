@@ -9,11 +9,17 @@ using UnityEngine;
 public class Leaderboard : NetworkBehaviour
 {
     [SerializeField] private Transform leaderboardEntityHolder;
+    [SerializeField] private Transform teamLeaderboardEntityHolder;
+    [SerializeField] private GameObject teamleaderboardPanel;
     [SerializeField] private LeaderboardEntityDisplay leaderboardPrefab;
     [SerializeField] private int entitysToDisplay = 8;
+    [SerializeField] private Color ownerColor = Color.black;
+    [SerializeField] private string[] teamName;
+    [SerializeField] private TeamColorLookup teamColorLookup;
 
     private NetworkList<LeaderboardEntityState> leaderboardEntities;
     private List<LeaderboardEntityDisplay> entityDisplays = new List<LeaderboardEntityDisplay>();
+    private List<LeaderboardEntityDisplay> teamEntityDisplays = new List<LeaderboardEntityDisplay>();
 
     private void Awake()
     {
@@ -23,6 +29,20 @@ public class Leaderboard : NetworkBehaviour
     {
         if (IsClient)
         {
+            if (ClientSingleton.Instance.ClientGameManager.UserData.UserGamePreferences.GameQueue == GameQueue.Team)
+            {
+                teamleaderboardPanel.SetActive(true);
+                for (int i = 0; i < teamName.Length; i++)
+                {
+                    LeaderboardEntityDisplay teamLeaderboardEntityDisplay = Instantiate(leaderboardPrefab, teamLeaderboardEntityHolder);
+                    teamLeaderboardEntityDisplay.Initialize(i, teamName[i], 0);
+
+                    Color teamColor = teamColorLookup.GetTeamColor(i);
+                    teamLeaderboardEntityDisplay.SetColor(teamColor);
+                    teamEntityDisplays.Add(teamLeaderboardEntityDisplay);
+                }
+
+            }
             leaderboardEntities.OnListChanged += HandleLeaderboardEntitiesChanged;
             foreach (LeaderboardEntityState entity in leaderboardEntities)
             {
@@ -57,6 +77,10 @@ public class Leaderboard : NetworkBehaviour
                     LeaderboardEntityDisplay leaderboardEntityDisplay = Instantiate(leaderboardPrefab, leaderboardEntityHolder);
                     leaderboardEntityDisplay.Initialize(changeEvent.Value.ClientId, changeEvent.Value.PlayerName, changeEvent.Value.Coins);
                     entityDisplays.Add(leaderboardEntityDisplay);
+                    if (NetworkManager.Singleton.LocalClientId == changeEvent.Value.ClientId)
+                    {
+                        leaderboardEntityDisplay.SetColor(ownerColor);
+                    }
                 }
                 break;
             case NetworkListEvent<LeaderboardEntityState>.EventType.Remove:
@@ -94,7 +118,31 @@ public class Leaderboard : NetworkBehaviour
                 myDisplay.gameObject.SetActive(true);
             }
         }
+
+        if (!teamleaderboardPanel.activeSelf) return;
+        LeaderboardEntityDisplay teamDisplay = teamEntityDisplays.FirstOrDefault(x => x.TeamIndex == changeEvent.Value.TeamIndex);
+        if (teamDisplay != null)
+        {
+            if (changeEvent.Type == NetworkListEvent<LeaderboardEntityState>.EventType.Remove)
+            {
+                teamDisplay.UpdateCoin(teamDisplay.Coins - changeEvent.Value.Coins);
+            }
+            else
+            {
+                // teamCoin+(current-previous) Increse  => [10 + (8-7)] or Decrese =>  [10+(9-10)] team coin
+                teamDisplay.UpdateCoin(teamDisplay.Coins + (changeEvent.Value.Coins - changeEvent.PreviousValue.Coins));
+            }
+            teamEntityDisplays.Sort((x, y) => y.Coins.CompareTo(x.Coins));
+
+            for (int i = 0; i < teamEntityDisplays.Count; i++)
+            {
+                teamEntityDisplays[i].transform.SetSiblingIndex(i);
+                teamEntityDisplays[i].UpdateText();//update coin text
+            }
+        }
+
     }
+
 
     public override void OnNetworkDespawn()
     {
@@ -115,6 +163,7 @@ public class Leaderboard : NetworkBehaviour
         {
             ClientId = player.OwnerClientId,
             PlayerName = player.PlayerName.Value,
+            TeamIndex = player.TeamIndex.Value,
             Coins = 0,
         });
         player.CoinWallet.TotalCoins.OnValueChanged += (oldCoins, newCoins) => HandleCoinsChange(player.OwnerClientId, newCoins);
@@ -142,6 +191,7 @@ public class Leaderboard : NetworkBehaviour
             {
                 ClientId = leaderboardEntities[i].ClientId,
                 PlayerName = leaderboardEntities[i].PlayerName,
+                TeamIndex = leaderboardEntities[i].TeamIndex,
                 Coins = newCoins
             };
             return;
