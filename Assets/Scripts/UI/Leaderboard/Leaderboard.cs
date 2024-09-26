@@ -31,6 +31,7 @@ public class Leaderboard : NetworkBehaviour
         {
             if (ClientSingleton.Instance.ClientGameManager.UserData.UserGamePreferences.GameQueue == GameQueue.Team)
             {
+                // Debug.Log("QQQQQQ  "+ClientSingleton.Instance.ClientGameManager.UserData.UserGamePreferences.GameQueue);
                 teamleaderboardPanel.SetActive(true);
                 for (int i = 0; i < teamName.Length; i++)
                 {

@@ -28,6 +28,7 @@ public class GameHUD : NetworkBehaviour
         {
             lobbyCode.OnValueChanged -= HandleLobbyCodeChange;
         }
+        ClientSingleton.Instance.ClientGameManager.UserData.UserGamePreferences.GameQueue = GameQueue.Solo;//test fixbug leaderbord
     }
 
     private void HandleLobbyCodeChange(FixedString32Bytes oldCode, FixedString32Bytes newCode)
